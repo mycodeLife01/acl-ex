@@ -1,0 +1,1 @@
+"schedual_id"	"season_id"	"schedual_name"	"schedual_start_time"	"schedual_status"	"team_1"	"team_2"	"team_1_score"	"team_2_score"	"stage_id"	"stage_name"
