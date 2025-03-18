@@ -144,19 +144,32 @@ def get_schedule_by_season(id):
     try:
         schedules = [
             {
-                "schedule_id": schedule.schedule_id,
-                "season_id": schedule.season_id,
-                "schedule_name": schedule.schedule_name,
-                "schedule_start_time": schedule.schedule_start_time,
-                "schedule_status": schedule.schedule_status,
-                "team_score_list": [
-                    {"team_name": schedule.team_1, "score": schedule.team_1_score},
-                    {"team_name": schedule.team_2, "score": schedule.team_2_score},
+                "season_id": id,
+                "schedule_list": [
+                    {
+                        "schedule_id": schedule.schedule_id,
+                        "season_id": schedule.season_id,
+                        "schedule_name": schedule.schedule_name,
+                        "schedule_start_time": schedule.schedule_start_time,
+                        "schedule_status": schedule.schedule_status,
+                        "team_score_list": [
+                            {
+                                "team_name": schedule.team_1,
+                                "score": schedule.team_1_score,
+                            },
+                            {
+                                "team_name": schedule.team_2,
+                                "score": schedule.team_2_score,
+                            },
+                        ],
+                        "stage_id": schedule.stage_id,
+                        "stage_name": schedule.stage_name,
+                    }
+                    for schedule in Schedule.query.filter(
+                        Schedule.season_id == id
+                    ).all()
                 ],
-                "stage_id": schedule.stage_id,
-                "stage_name": schedule.stage_name,
             }
-            for schedule in Schedule.query.filter(Schedule.season_id == id).all()
         ]
         return schedules
     except Exception as e:
@@ -168,19 +181,33 @@ def get_schedule_by_seasons(ids):
     try:
         schedules = [
             {
-                "schedule_id": schedule.schedule_id,
-                "season_id": schedule.season_id,
-                "schedule_name": schedule.schedule_name,
-                "schedule_start_time": schedule.schedule_start_time,
-                "schedule_status": schedule.schedule_status,
-                "team_score_list": [
-                    {"team_name": schedule.team_1, "score": schedule.team_1_score},
-                    {"team_name": schedule.team_2, "score": schedule.team_2_score},
+                "season_id": id,
+                "schedule_list": [
+                    {
+                        "schedule_id": schedule.schedule_id,
+                        "season_id": schedule.season_id,
+                        "schedule_name": schedule.schedule_name,
+                        "schedule_start_time": schedule.schedule_start_time,
+                        "schedule_status": schedule.schedule_status,
+                        "team_score_list": [
+                            {
+                                "team_name": schedule.team_1,
+                                "score": schedule.team_1_score,
+                            },
+                            {
+                                "team_name": schedule.team_2,
+                                "score": schedule.team_2_score,
+                            },
+                        ],
+                        "stage_id": schedule.stage_id,
+                        "stage_name": schedule.stage_name,
+                    }
+                    for schedule in Schedule.query.filter(
+                        Schedule.season_id.in_(ids)
+                    ).all()
                 ],
-                "stage_id": schedule.stage_id,
-                "stage_name": schedule.stage_name,
             }
-            for schedule in Schedule.query.filter(Schedule.season_id.in_(ids)).all()
+            for id in ids
         ]
         return schedules
     except Exception as e:

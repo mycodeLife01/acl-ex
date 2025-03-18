@@ -1,0 +1,42 @@
+# Python 编译的文件
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+
+# 虚拟环境文件夹
+venv/
+env/
+*.env
+
+# Flask 配置文件
+instance/
+
+# 生成的数据库文件
+*.sqlite
+*.sqlite3
+
+# Flask 的日志文件
+*.log
+
+# 本地配置文件（例如 secrets 或者数据库配置等）
+config.py
+
+# IDE 编辑器生成的文件
+.vscode/
+.idea/
+
+# 操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 可选: 如果使用 PyCharm 等开发工具
+.idea/
+
+# 可能的 Docker 文件（如果有）
+docker-compose.override.yml
+
+# 其他工具生成的文件
+*.bak
+*.swp

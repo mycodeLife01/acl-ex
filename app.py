@@ -1,7 +1,7 @@
 from flask import Flask, Blueprint, jsonify, request
 from flask_cors import CORS
 from extensions import db
-from da import *
+from service import *
 import logging
 
 main_bp = Blueprint("main", __name__, url_prefix="/acl/api")
@@ -39,15 +39,13 @@ def schedules():
             schedules = get_schedule_by_season(season_id)
         elif season_ids and not season_id:
             schedules = get_schedule_by_seasons(season_ids)
-        elif not (season_id or season_ids):
+        elif not request.args:
             schedules = get_schedule_all()
         else:
-            raise Exception("team参数传递有误")
-
-        if schedules is None or schedules == []:
+            return jsonify({"code": 401, "message": "查询参数错误"})
+        if not schedule_checked(schedules):
             return jsonify({"code": 501, "message": "查询的数据不存在"})
-        else:
-            return jsonify({"code": 200, "data": schedules, "message": "数据获取成功"})
+        return jsonify({"code": 200, "data": schedules, "message": "数据获取成功"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return jsonify({"code": 500, "message": "数据获取失败"})
@@ -101,6 +99,25 @@ def matches():
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return jsonify({"code": 500, "message": "数据获取失败"})
+
+
+# 处理多个赛季的赛程返回值
+def schedule_checked(schedules):
+    if schedules and len(schedules) == 1:
+        if schedules[0]["schedule_list"] == []:
+            return False
+        return True
+    elif schedules and len(schedules) > 1:
+        if not schedules:
+            return False
+        schedule_list = []
+        for s in schedules:
+            schedule_list.extend(s["schedule_list"])
+        if schedule_list == []:
+            return False
+        return True
+    else:
+        return False
 
 
 def create_app():
