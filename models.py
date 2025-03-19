@@ -26,7 +26,7 @@ class Schedule(db.Model):
 
 class Team_Info(db.Model):
     __tablename__ = 'team_info'
-    team_id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.String, primary_key=True)
     team_name = db.Column(db.String(255), nullable=False)
     team_logo = db.Column(db.String(255))
 
