@@ -18,7 +18,7 @@ def seasons():
             seasons = get_season_by_endTime(end_time)
         elif start_time and end_time:
             seasons = get_season_by_startTime_endTime(start_time, end_time)
-        elif not (request.args or request.get_json()):
+        elif not (request.args or request.is_json):
             seasons = get_season_all()
         else:
             return jsonify({"code": 40001, "message": "查询参数错误"})
