@@ -1,4 +1,12 @@
-from models import Season, Schedule, Team_Info, Match
+from models import (
+    Season,
+    Schedule,
+    Team_Info,
+    Match,
+    PlayerList,
+    RealTimeMatch,
+    RealTimePlayer,
+)
 from sqlalchemy import and_
 import logging
 
@@ -91,6 +99,7 @@ def get_schedule_all():
                 ],
                 "stageId": schedule.stage_id,
                 "stageName": schedule.stage_name,
+                "scheduleType": schedule.schedule_type,
             }
             for schedule in Schedule.query.all()
         ]
@@ -191,6 +200,7 @@ def get_schedule_by_season(id):
                         ],
                         "stageId": schedule.stage_id,
                         "stageName": schedule.stage_name,
+                        "scheduleType": schedule.schedule_type,
                     }
                     for schedule in Schedule.query.filter(
                         Schedule.season_id == id
@@ -198,6 +208,10 @@ def get_schedule_by_season(id):
                 ],
             }
         ]
+        for season in schedules:
+            schedules_in_season = season["scheduleList"]
+            for schedule in schedules_in_season:
+                del schedule["seasonId"]
         return schedules
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
@@ -228,6 +242,7 @@ def get_schedule_by_seasons(ids):
                         ],
                         "stageId": schedule.stage_id,
                         "stageName": schedule.stage_name,
+                        "scheduleType": schedule.schedule_type,
                     }
                     for schedule in Schedule.query.filter(
                         Schedule.season_id.in_(ids)
@@ -236,6 +251,10 @@ def get_schedule_by_seasons(ids):
             }
             for id in ids
         ]
+        for season in schedules:
+            schedules_in_season = season["scheduleList"]
+            for schedule in schedules_in_season:
+                del schedule["seasonId"]
         return schedules
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
@@ -391,6 +410,139 @@ def get_match_by_schedules(ids):
             matches = get_match_by_schedule(id)
             res.append(matches)
         return res
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return None
+
+
+def get_players():
+    try:
+        res = [
+            {"playerName": player_name, "team": team}
+            for (player_name, team) in PlayerList.query.with_entities(
+                PlayerList.player_name, PlayerList.team
+            )
+            .order_by(PlayerList.team.asc())
+            .all()
+        ]
+        return res
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return None
+
+
+def get_real_time_match():
+    try:
+        match_id = (
+            Match.query.with_entities(Match.match_id)
+            .filter(Match.match_status == 2)
+            .scalar()
+        )
+        if match_id:
+            real_time_match = RealTimeMatch.query.filter(
+                RealTimeMatch.match_id == match_id
+            ).first()
+            return {
+                "matchId": match_id,
+                "team1": real_time_match.team_1,
+                "team_2": real_time_match.team_2,
+                "team_1_score": real_time_match.team_1_score,
+                "team_2_score": real_time_match.team_2_score,
+                "match_status": 2,
+            }
+        else:
+            real_time_match = RealTimeMatch.query.order_by(
+                RealTimeMatch.match_id.desc()
+            ).first()
+            return {
+                "matchId": real_time_match.match_id,
+                "team_1": real_time_match.team_1,
+                "team_2": real_time_match.team_2,
+                "team_1_score": real_time_match.team_1_score,
+                "team_2_score": real_time_match.team_2_score,
+                "matchStatus": 3,
+            }
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return None
+
+
+def get_real_time_player():
+
+    def process_players(players):
+        team_player_dict = {}
+        for player in players:
+            p = dict(player)
+            team = p["team"]
+            match_id = p["matchId"]
+            del p["matchId"]
+            if team not in list(team_player_dict.keys()):
+                team_player_dict.update(
+                    {
+                        team: [
+                            p,
+                        ]
+                    }
+                )
+            else:
+                team_player_dict[team].append(player)
+        return {"match_id": match_id, "team_player_dict": team_player_dict}
+
+    try:
+        match_id = (
+            Match.query.with_entities(Match.match_id)
+            .filter(Match.match_status == 2)
+            .scalar()
+        )
+        if match_id:
+            players = [
+                {
+                    "matchId": player.match_id,
+                    "steamId": player.steam_id,
+                    "team": player.team,
+                    "playerName": player.player_name,
+                    "team": player.team,
+                    "kills": player.kills,
+                    "deaths": player.deaths,
+                    "assists": player.assists,
+                }
+                for player in RealTimePlayer.query.filter(
+                    RealTimePlayer.match_id == match_id
+                )
+                .order_by(RealTimePlayer.team.asc())
+                .all()
+            ]
+            d = process_players(players)["team_player_dict"]
+            res = {"matchStatus": 2, "matchId": match_id}
+            team_list = list(d.values())
+        else:
+            players = [
+                {
+                    "matchId": player.match_id,
+                    "steamId": player.steam_id,
+                    "playerName": player.player_name,
+                    "team": player.team,
+                    "kills": player.kills,
+                    "deaths": player.deaths,
+                    "assists": player.assists,
+                }
+                for player in RealTimePlayer.query.order_by(
+                    RealTimePlayer.match_id.desc()
+                ).limit(10)
+            ]
+            d = process_players(players)["team_player_dict"]
+            match_id = process_players(players)["match_id"]
+            team_list = list(d.values())
+            res = {"matchStatus": 3, "matchId": match_id}
+
+        if team_list[0][0]["team"] == get_real_time_match()["team_1"]:
+            res["team_1"] = team_list[0]
+            res["team_2"] = team_list[1]
+        else:
+            res["team_1"] = team_list[1]
+            res["team_2"] = team_list[0]
+        return res
+    
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return None

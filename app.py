@@ -75,7 +75,7 @@ def teams():
             teams = get_team_by_schedules(schedule_ids)
         else:
             return jsonify({"code": 40001, "message": "查询参数错误"})
-        
+
         if teams is None or teams == []:
             return jsonify({"code": 50001, "message": "查询的数据不存在"})
         else:
@@ -102,6 +102,52 @@ def matches():
             return jsonify({"code": 50001, "message": "查询的数据不存在"})
         else:
             return jsonify({"code": 200, "data": matches, "message": "数据获取成功"})
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return jsonify({"code": 500, "message": "数据获取失败"})
+
+
+@main_bp.route("/players")
+def players():
+    try:
+        if request.args or request.is_json:
+            return jsonify({"code": 40001, "message": "查询参数错误"})
+        players = get_players()
+        for p in players:
+            p.update(
+                {
+                    "photo": "https://global.bussiness.vspo.cn/acl_2025/player_photo/test.jpg"
+                }
+            )
+        return jsonify({"code": 200, "data": players, "message": "数据获取成功"})
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return jsonify({"code": 500, "message": "数据获取失败"})
+
+
+@main_bp.route("/real_time_match")
+def real_time_match():
+    try:
+        real_time_match = get_real_time_match()
+        if real_time_match:
+            return jsonify(
+                {"code": 200, "data": real_time_match, "message": "数据获取成功"}
+            )
+        return jsonify({"code": 50001, "message": "暂无正在进行中的比赛"})
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return jsonify({"code": 500, "message": "数据获取失败"})
+
+
+@main_bp.route("/real_time_players")
+def real_time_players():
+    try:
+        real_time_players = get_real_time_player()
+        if real_time_players:
+            return jsonify(
+                {"code": 200, "data": real_time_players, "message": "数据获取成功"}
+            )
+        return jsonify({"code": 50001, "message": "暂无正在进行中的比赛"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return jsonify({"code": 500, "message": "数据获取失败"})
