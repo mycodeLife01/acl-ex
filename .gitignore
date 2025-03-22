@@ -9,7 +9,7 @@ __pycache__/
 venv/
 env/
 *.env
-
+sql/
 # Flask 配置文件
 instance/
 
