@@ -21,10 +21,10 @@ def seasons():
         elif not (request.args or request.is_json):
             seasons = get_season_all()
         else:
-            return jsonify({"code": 40001, "message": "查询参数错误"})
+            return jsonify({"code": 400, "message": "查询参数错误"})
 
         if not season_checked(seasons):
-            return jsonify({"code": 50001, "message": "查询的数据不存在"})
+            return jsonify({"code": 404, "message": "查询的数据不存在"})
         return jsonify({"code": 200, "data": seasons, "message": "数据获取成功"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
@@ -43,9 +43,9 @@ def schedules():
         elif not (request.args or season_ids):
             schedules = get_schedule_all()
         else:
-            return jsonify({"code": 40001, "message": "查询参数错误"})
+            return jsonify({"code": 400, "message": "查询参数错误"})
         if not schedule_checked(schedules):
-            return jsonify({"code": 50001, "message": "查询的数据不存在"})
+            return jsonify({"code": 404, "message": "查询的数据不存在"})
         return jsonify({"code": 200, "data": schedules, "message": "数据获取成功"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
@@ -63,21 +63,21 @@ def teams():
             teams = get_team_all()
         elif season_id and not (schedule_id or season_ids or schedule_ids):
             if season_id != "1":
-                return jsonify({"code": 50001, "message": "查询的数据不存在"})
+                return jsonify({"code": 404, "message": "查询的数据不存在"})
             teams = get_team_by_season(season_id)
         elif schedule_id and not (season_id or season_ids or schedule_ids):
             teams = get_team_by_schedule(schedule_id)
         elif season_ids and not (season_id or schedule_id or schedule_ids):
             if "1" not in season_ids:
-                return jsonify({"code": 50001, "message": "查询的数据不存在"})
+                return jsonify({"code": 404, "message": "查询的数据不存在"})
             teams = get_team_by_seasons(season_ids)
         elif schedule_ids and not (season_id or schedule_id or season_ids):
             teams = get_team_by_schedules(schedule_ids)
         else:
-            return jsonify({"code": 40001, "message": "查询参数错误"})
+            return jsonify({"code": 400, "message": "查询参数错误"})
 
         if teams is None or teams == []:
-            return jsonify({"code": 50001, "message": "查询的数据不存在"})
+            return jsonify({"code": 404, "message": "查询的数据不存在"})
         else:
             return jsonify({"code": 200, "data": teams, "message": "数据获取成功"})
     except Exception as e:
@@ -97,9 +97,9 @@ def matches():
         elif not (request.args or schedule_ids):
             matches = get_match_all()
         else:
-            return jsonify({"code": 40001, "message": "查询参数错误"})
+            return jsonify({"code": 400, "message": "查询参数错误"})
         if matches is None or matches == []:
-            return jsonify({"code": 50001, "message": "查询的数据不存在"})
+            return jsonify({"code": 404, "message": "查询的数据不存在"})
         else:
             return jsonify({"code": 200, "data": matches, "message": "数据获取成功"})
     except Exception as e:
@@ -111,7 +111,7 @@ def matches():
 def players():
     try:
         if request.args or request.is_json:
-            return jsonify({"code": 40001, "message": "查询参数错误"})
+            return jsonify({"code": 400, "message": "查询参数错误"})
         players = get_players()
         for p in players:
             p.update(
@@ -133,7 +133,7 @@ def real_time_match():
             return jsonify(
                 {"code": 200, "data": real_time_match, "message": "数据获取成功"}
             )
-        return jsonify({"code": 50001, "message": "暂无正在进行中的比赛"})
+        return jsonify({"code": 404, "message": "暂无正在进行中的比赛"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return jsonify({"code": 500, "message": "数据获取失败"})
@@ -147,7 +147,7 @@ def real_time_players():
             return jsonify(
                 {"code": 200, "data": real_time_players, "message": "数据获取成功"}
             )
-        return jsonify({"code": 50001, "message": "暂无正在进行中的比赛"})
+        return jsonify({"code": 404, "message": "暂无正在进行中的比赛"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return jsonify({"code": 500, "message": "数据获取失败"})
