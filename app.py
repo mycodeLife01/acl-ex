@@ -7,6 +7,11 @@ import logging
 main_bp = Blueprint("main", __name__, url_prefix="/acl/api")
 
 
+@main_bp.route("/")
+def root():
+    return jsonify({"status": "operational"})
+
+
 @main_bp.route("/seasons")
 def seasons():
     start_time = request.args.get("start_time")
@@ -201,5 +206,5 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    #这是一行注释
+    # 这是一行注释
     app.run(host="0.0.0.0", port=5555)
