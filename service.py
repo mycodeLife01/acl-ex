@@ -433,35 +433,65 @@ def get_players():
 
 def get_real_time_match():
     try:
-        match_id = (
+        match_id_ongoing = (
             Match.query.with_entities(Match.match_id)
             .filter(Match.match_status == 2)
             .scalar()
         )
-        if match_id:
-            real_time_match = RealTimeMatch.query.filter(
-                RealTimeMatch.match_id == match_id
-            ).first()
-            return {
-                "matchId": match_id,
-                "team1": real_time_match.team_1,
-                "team_2": real_time_match.team_2,
-                "team_1_score": real_time_match.team_1_score,
-                "team_2_score": real_time_match.team_2_score,
-                "match_status": 2,
-            }
-        else:
-            real_time_match = RealTimeMatch.query.order_by(
-                RealTimeMatch.match_id.desc()
-            ).first()
-            return {
-                "matchId": real_time_match.match_id,
-                "team_1": real_time_match.team_1,
-                "team_2": real_time_match.team_2,
-                "team_1_score": real_time_match.team_1_score,
-                "team_2_score": real_time_match.team_2_score,
-                "matchStatus": 3,
-            }
+        match_id_end = (
+            Match.query.with_entities(Match.match_id)
+            .filter(Match.match_status == 3)
+            .order_by(Match.match_id.desc())
+            .limit(1)
+            .scalar()
+        )
+        q_id = match_id_ongoing if match_id_ongoing else match_id_end
+
+        real_time_match_info: RealTimeMatch = RealTimeMatch.query.filter(
+            RealTimeMatch.match_id == q_id
+        ).first()
+        player_info: list[RealTimePlayer] = RealTimePlayer.query.filter(
+            RealTimePlayer.match_id == q_id
+        ).all()
+        match_info: Match = Match.query.filter(Match.match_id == q_id).first()
+        return {
+            "matchId": real_time_match_info.match_id,
+            "matchStatus": match_info.match_status,
+            "winner_team": match_info.winner,
+            "team_1": {
+                "teamId": real_time_match_info.team_1,
+                "teamName": real_time_match_info.team_1,
+                "teamScore": real_time_match_info.team_1_score,
+                "playerStats": [
+                    {
+                        "steamId": p.steam_id,
+                        "playerName": p.player_name,
+                        "kills": p.kills,
+                        "deaths": p.deaths,
+                        "assists": p.assists,
+                    }
+                    for p in player_info
+                    if p.team == real_time_match_info.team_1
+                ],
+            },
+            "team_2": {
+                "teamId": real_time_match_info.team_2,
+                "teamName": real_time_match_info.team_2,
+                "teamScore": real_time_match_info.team_2_score,
+                "playerStats": [
+                    {
+                        "steamId": p.steam_id,
+                        "playerName": p.player_name,
+                        "kills": p.kills,
+                        "deaths": p.deaths,
+                        "assists": p.assists,
+                    }
+                    for p in player_info
+                    if p.team == real_time_match_info.team_2
+                ],
+            },
+        }
+
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return None
@@ -542,7 +572,7 @@ def get_real_time_player():
             res["team_1"] = team_list[1]
             res["team_2"] = team_list[0]
         return res
-    
+
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return None
