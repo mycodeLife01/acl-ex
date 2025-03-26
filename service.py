@@ -438,15 +438,18 @@ def get_real_time_match():
             .filter(Match.match_status == 2)
             .scalar()
         )
-        match_id_end = (
-            Match.query.with_entities(Match.match_id)
-            .filter(Match.match_status == 3)
-            .order_by(Match.match_id.desc())
-            .limit(1)
-            .scalar()
-        )
-        q_id = match_id_ongoing if match_id_ongoing else match_id_end
-
+        # match_id_end = (
+        #     Match.query.with_entities(Match.match_id)
+        #     .filter(Match.match_status == 3)
+        #     .order_by(Match.match_id.desc())
+        #     .limit(1)
+        #     .scalar()
+        # )
+        # q_id = match_id_ongoing if match_id_ongoing else match_id_end
+        if match_id_ongoing:
+            q_id = match_id_ongoing
+        else:
+            return None
         real_time_match_info: RealTimeMatch = RealTimeMatch.query.filter(
             RealTimeMatch.match_id == q_id
         ).first()
