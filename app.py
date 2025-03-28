@@ -106,8 +106,12 @@ def teams():
 def matches():
     schedule_id = request.args.get("schedule_id")
     # schedule_ids = request.get_json().get("schedule_ids") if request.is_json else None
-    schedule_ids_param = request.args.get("schedule_ids")
-    schedule_ids = json.loads(schedule_ids_param) if schedule_ids_param else None
+    try:
+        schedule_ids_param = request.args.get("schedule_ids")
+        schedule_ids = json.loads(schedule_ids_param) if schedule_ids_param else None
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return jsonify({"code": 400, "message": "参数错误"})
     try:
         if schedule_id and not schedule_ids:
             matches = get_match_by_schedule(schedule_id)
