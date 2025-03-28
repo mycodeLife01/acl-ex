@@ -3,6 +3,7 @@ from flask_cors import CORS
 from extensions import db
 from service import *
 import logging
+import json
 
 main_bp = Blueprint("main", __name__, url_prefix="/acl/api")
 
@@ -39,7 +40,11 @@ def seasons():
 @main_bp.route("/schedules")
 def schedules():
     season_id = request.args.get("season_id")
-    season_ids = request.get_json().get("season_ids") if request.is_json else None
+    # season_ids = request.get_json().get("season_ids") if request.is_json else None
+    season_ids_param = request.args.get("season_ids")
+
+    season_ids = json.loads(season_ids_param) if season_ids_param else None
+
     try:
         if season_id and not season_ids:
             schedules = get_schedule_by_season(season_id)
@@ -61,8 +66,15 @@ def schedules():
 def teams():
     season_id = request.args.get("season_id")
     schedule_id = request.args.get("schedule_id")
-    season_ids = request.get_json().get("season_ids") if request.is_json else None
-    schedule_ids = request.get_json().get("schedule_ids") if request.is_json else None
+    # season_ids = request.get_json().get("season_ids") if request.is_json else None
+    # schedule_ids = request.get_json().get("schedule_ids") if request.is_json else None
+
+    season_ids_param = request.args.get("season_ids")
+    schedule_ids_param = request.args.get("schedule_ids")
+
+    season_ids = json.loads(season_ids_param) if season_ids_param else None
+    schedule_ids = json.loads(schedule_ids_param) if schedule_ids_param else None
+
     try:
         if not (request.args or season_ids or schedule_ids):
             teams = get_team_all()
@@ -73,7 +85,7 @@ def teams():
         elif schedule_id and not (season_id or season_ids or schedule_ids):
             teams = get_team_by_schedule(schedule_id)
         elif season_ids and not (season_id or schedule_id or schedule_ids):
-            if "1" not in season_ids:
+            if int(1) not in season_ids:
                 return jsonify({"code": 404, "message": "查询的数据不存在"})
             teams = get_team_by_seasons(season_ids)
         elif schedule_ids and not (season_id or schedule_id or season_ids):
@@ -93,7 +105,9 @@ def teams():
 @main_bp.route("/matches")
 def matches():
     schedule_id = request.args.get("schedule_id")
-    schedule_ids = request.get_json().get("schedule_ids") if request.is_json else None
+    # schedule_ids = request.get_json().get("schedule_ids") if request.is_json else None
+    schedule_ids_param = request.args.get("schedule_ids")
+    schedule_ids = json.loads(schedule_ids_param) if schedule_ids_param else None
     try:
         if schedule_id and not schedule_ids:
             matches = get_match_by_schedule(schedule_id)
