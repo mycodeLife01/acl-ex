@@ -72,3 +72,36 @@ class RealTimePlayer(db.Model):
     deaths = db.Column(db.Integer, nullable=False)
     assists = db.Column(db.Integer, nullable=False)
     team = db.Column(db.String(255), nullable=False)
+
+
+class TeamOffline(db.Model):
+    __tablename__ = "team_offline"
+    team_id = db.Column(db.String(255), primary_key=True)
+    team_name = db.Column(db.String(255), nullable=False)
+    team_name_abbr = db.Column(db.String(255), nullable=False)
+    team_logo = db.Column(db.String(255), nullable=False)
+    team_name_abbr = db.Column(db.String(255), nullable=False)
+    region = db.Column(db.String(255), nullable=False)
+    delete = db.Column(db.Integer, nullable=False)
+
+
+class PlayerOffline(db.Model):
+    __tablename__ = "player_offline"
+    steam_id = db.Column(db.String(255), primary_key=True)
+    char_name = db.Column(db.String(255), nullable=False)
+    position = db.Column(db.String(255), nullable=False)
+    starter = db.Column(db.Integer, nullable=False)
+    team_name = db.Column(db.String(255), nullable=False)
+    profile_photo = db.Column(db.String(255), nullable=False)
+    region = db.Column(db.String(255), nullable=False)
+    create_time = db.Column(
+        db.DateTime,
+        nullable=False,
+        server_default=db.func.now(),
+    )
+    update_time = db.Column(
+        db.DateTime,
+        nullable=False,
+        server_default=db.func.now(),
+        onupdate=db.func.now(),
+    )

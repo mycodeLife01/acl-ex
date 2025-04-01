@@ -136,12 +136,12 @@ def players():
         if request.args or request.is_json:
             return jsonify({"code": 400, "message": "查询参数错误"})
         players = get_players()
-        for p in players:
-            p.update(
-                {
-                    "photo": "https://global.bussiness.vspo.cn/acl_2025/player_photo/test.jpg"
-                }
-            )
+        # for p in players:
+        #     p.update(
+        #         {
+        #             "photo": "https://global.bussiness.vspo.cn/acl_2025/player_photo/test.jpg"
+        #         }
+        #     )
         return jsonify({"code": 200, "data": players, "message": "数据获取成功"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)

@@ -6,6 +6,8 @@ from models import (
     PlayerList,
     RealTimeMatch,
     RealTimePlayer,
+    TeamOffline,
+    PlayerOffline,
 )
 from sqlalchemy import and_
 import logging
@@ -269,7 +271,7 @@ def get_team_all():
                 "name": team.team_name,
                 "logo": team.team_logo,
             }
-            for team in Team_Info.query.all()
+            for team in TeamOffline.query.all()
         ]
         return teams
     except Exception as e:
@@ -293,7 +295,7 @@ def get_team_by_schedule(id):
                 "name": t.team_name,
                 "logo": t.team_logo,
             }
-            for t in Team_Info.query.filter(Team_Info.team_name.in_(team_set)).all()
+            for t in TeamOffline.query.filter(TeamOffline.team_id.in_(team_set)).all()
         ]
         return teams
     except Exception as e:
@@ -418,11 +420,13 @@ def get_match_by_schedules(ids):
 def get_players():
     try:
         res = [
-            {"playerName": player_name, "team": team}
-            for (player_name, team) in PlayerList.query.with_entities(
-                PlayerList.player_name, PlayerList.team
+            {"playerName": char_name.split("_")[1], "teamId": team_name, "photo": photo}
+            for (char_name, team_name, photo) in PlayerOffline.query.with_entities(
+                PlayerOffline.char_name,
+                PlayerOffline.team_name,
+                PlayerOffline.profile_photo,
             )
-            .order_by(PlayerList.team.asc())
+            .order_by(PlayerOffline.team_name.asc())
             .all()
         ]
         return res
