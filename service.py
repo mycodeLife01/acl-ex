@@ -426,7 +426,7 @@ def get_players():
                 PlayerOffline.team_id,
                 PlayerOffline.profile_photo,
             )
-            .order_by(PlayerOffline.team_name.asc())
+            .order_by(PlayerOffline.team_id.asc())
             .all()
         ]
         return res
