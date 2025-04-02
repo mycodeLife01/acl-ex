@@ -420,10 +420,10 @@ def get_match_by_schedules(ids):
 def get_players():
     try:
         res = [
-            {"playerName": char_name.split("_")[1], "teamId": team_name, "photo": photo}
-            for (char_name, team_name, photo) in PlayerOffline.query.with_entities(
+            {"playerName": char_name.split("_")[1], "teamId": team_id, "photo": photo}
+            for (char_name, team_id, photo) in PlayerOffline.query.with_entities(
                 PlayerOffline.char_name,
-                PlayerOffline.team_name,
+                PlayerOffline.team_id,
                 PlayerOffline.profile_photo,
             )
             .order_by(PlayerOffline.team_name.asc())

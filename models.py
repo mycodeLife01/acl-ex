@@ -91,7 +91,7 @@ class PlayerOffline(db.Model):
     char_name = db.Column(db.String(255), nullable=False)
     position = db.Column(db.String(255), nullable=False)
     starter = db.Column(db.Integer, nullable=False)
-    team_name = db.Column(db.String(255), nullable=False)
+    team_id = db.Column(db.String(255), nullable=False)
     profile_photo = db.Column(db.String(255), nullable=False)
     region = db.Column(db.String(255), nullable=False)
     create_time = db.Column(
