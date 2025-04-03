@@ -56,6 +56,12 @@ def schedules():
             return jsonify({"code": 400, "message": "查询参数错误"})
         if not schedule_checked(schedules):
             return jsonify({"code": 404, "message": "查询的数据不存在"})
+        
+        # 正式使用时要排除线上赛的schedule
+        schedule_list = schedules[0]['scheduleList']
+        final_schedule_list = [s for s in schedule_list if s['stageId'] != 0]
+        schedules[0]['scheduleList'] = final_schedule_list
+            
         return jsonify({"code": 200, "data": schedules, "message": "数据获取成功"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
