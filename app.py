@@ -2,6 +2,7 @@ from flask import Flask, Blueprint, jsonify, request
 from flask_cors import CORS
 from extensions import db
 from service import *
+from utils import sort_schedules
 import logging
 import json
 
@@ -61,7 +62,7 @@ def schedules():
         schedule_list = schedules[0]['scheduleList']
         final_schedule_list = [s for s in schedule_list if s['stageId'] != 0]
         schedules[0]['scheduleList'] = final_schedule_list
-            
+        sort_schedules(schedules)
         return jsonify({"code": 200, "data": schedules, "message": "数据获取成功"})
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
