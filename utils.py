@@ -20,8 +20,18 @@
 
 # sort O(nlog(n))
 def sort_schedules(schedules) -> None:
+    if schedules == [] or schedules is None:
+        return None
     for schedule in schedules:
-        schedule['scheduleList'].sort(
+        schedule["scheduleList"].sort(
             key=lambda item: tuple(map(int, item["scheduleId"].split("-")[1:]))
         )
     schedules.sort(key=lambda item: item["seasonId"])
+
+
+def sort_matches(matches) -> None:
+    if matches == [] or matches is None:
+        return None
+    for series in matches:
+        series["matchList"].sort(key=lambda item: int(item["matchId"].split("-")[3]))
+    matches.sort(key=lambda item: tuple(map(int, item["scheduleId"].split("-"))))

@@ -94,6 +94,8 @@ def get_schedule_all():
                 "season_id": schedule.season_id,
                 "scheduleName": schedule.schedule_name,
                 "scheduleStartTime": schedule.schedule_start_time,
+                "scheduleRealStartTime": schedule.schedule_real_start_time,
+                "scheduleRealEndTime": schedule.schedule_real_end_time,
                 "scheduleStatus": schedule.schedule_status,
                 "teamScoreList": [
                     {"teamId": schedule.team_1, "score": schedule.team_1_score},
@@ -189,6 +191,8 @@ def get_schedule_by_season(id):
                         "seasonId": schedule.season_id,
                         "scheduleName": schedule.schedule_name,
                         "scheduleStartTime": schedule.schedule_start_time,
+                        "scheduleRealStartTime": schedule.schedule_real_start_time,
+                        "scheduleRealEndTime": schedule.schedule_real_end_time,
                         "scheduleStatus": schedule.schedule_status,
                         "teamScoreList": [
                             {
@@ -231,6 +235,8 @@ def get_schedule_by_seasons(ids):
                         "seasonId": schedule.season_id,
                         "scheduleName": schedule.schedule_name,
                         "scheduleStartTime": schedule.schedule_start_time,
+                        "scheduleRealStartTime": schedule.schedule_real_start_time,
+                        "scheduleRealEndTime": schedule.schedule_real_end_time,
                         "scheduleStatus": schedule.schedule_status,
                         "teamScoreList": [
                             {
@@ -367,6 +373,8 @@ def get_match_all():
                 "scheduleId": match.schedule_id,
                 "matchStartTime": match.match_start_time,
                 "matchEndTime": match.match_end_time,
+                "matchRealStartTime": match.match_real_start_time,
+                "matchRealEndTime": match.match_real_end_time,
                 "winner": match.winner,
                 "matchOrder": match.match_num,
             }

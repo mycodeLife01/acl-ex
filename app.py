@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, jsonify, request
 from flask_cors import CORS
 from extensions import db
 from service import *
-from utils import sort_schedules
+from utils import *
 import logging
 import json
 
@@ -57,11 +57,11 @@ def schedules():
             return jsonify({"code": 400, "message": "查询参数错误"})
         if not schedule_checked(schedules):
             return jsonify({"code": 404, "message": "查询的数据不存在"})
-        
+
         # 正式使用时要排除线上赛的schedule
-        schedule_list = schedules[0]['scheduleList']
-        final_schedule_list = [s for s in schedule_list if s['stageId'] != 0]
-        schedules[0]['scheduleList'] = final_schedule_list
+        schedule_list = schedules[0]["scheduleList"]
+        final_schedule_list = [s for s in schedule_list if s["stageId"] != 0]
+        schedules[0]["scheduleList"] = final_schedule_list
         sort_schedules(schedules)
         return jsonify({"code": 200, "data": schedules, "message": "数据获取成功"})
     except Exception as e:
@@ -131,7 +131,15 @@ def matches():
         if matches is None or matches == []:
             return jsonify({"code": 404, "message": "查询的数据不存在"})
         else:
-            return jsonify({"code": 200, "data": matches, "message": "数据获取成功"})
+            offline_matches = [
+                m for m in matches if m["scheduleId"].split("-")[1] != "0"
+            ]
+            sort_matches(offline_matches)
+            if offline_matches == []:
+                return {"code": 200, "message": "暂无数据"}
+            return jsonify(
+                {"code": 200, "data": offline_matches, "message": "数据获取成功"}
+            )
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return jsonify({"code": 500, "message": "数据获取失败"})
