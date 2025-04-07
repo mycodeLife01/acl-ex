@@ -469,9 +469,15 @@ def get_real_time_match():
             RealTimePlayer.match_id == q_id
         ).all()
         match_info: Match = Match.query.filter(Match.match_id == q_id).first()
+        schedule_type = (
+            Schedule.query.with_entities(Schedule.schedule_type)
+            .filter(Schedule.schedule_id == match_info.schedule_id)
+            .scalar()
+        )
         return {
             "matchId": real_time_match_info.match_id,
             "matchStatus": match_info.match_status,
+            "scheduleType": schedule_type,
             "winner_team": match_info.winner,
             "team_1": {
                 "teamId": real_time_match_info.team_1,
@@ -603,7 +609,7 @@ def get_current_score():
         if current_schedule_id:
             schedule = get_schedule_by_id(current_schedule_id)
             print(schedule)
-            team_score_list = schedule['schedule_list']["team_score_list"]
+            team_score_list = schedule["schedule_list"]["team_score_list"]
             res = {
                 "team_1": team_score_list[0]["team_name"],
                 "team_1_score": team_score_list[0]["score"],
