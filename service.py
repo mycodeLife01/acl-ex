@@ -126,7 +126,7 @@ def get_schedule_all():
 
 def get_schedule_by_id(id):
     try:
-        schedule_result = schedule.query.get(id)
+        schedule_result = Schedule.query.get(id)
         schedule = {
             "season_id": 0,
             "schedule_list": {
@@ -591,3 +591,26 @@ def get_real_time_player():
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
         return None
+
+
+def get_current_score():
+    try:
+        current_schedule_id = (
+            Schedule.query.with_entities(Schedule.schedule_id)
+            .filter(Schedule.schedule_status == 2)
+            .scalar()
+        )
+        if current_schedule_id:
+            schedule = get_schedule_by_id(current_schedule_id)
+            print(schedule)
+            team_score_list = schedule['schedule_list']["team_score_list"]
+            res = {
+                "team_1": team_score_list[0]["team_name"],
+                "team_1_score": team_score_list[0]["score"],
+                "team_2": team_score_list[1]["team_name"],
+                "team_2_score": team_score_list[1]["score"],
+            }
+            return res
+        return {}
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)

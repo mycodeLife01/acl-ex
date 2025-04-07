@@ -176,6 +176,17 @@ def real_time_match():
         logging.error(f"发生错误：{e}", exc_info=True)
         return jsonify({"code": 500, "message": "数据获取失败"})
 
+@main_bp.route('/currentScheduleScore')
+def currentScheduleScore():
+    try:
+        score = get_current_score()
+        if score == {}:
+            return jsonify({"code": 404, "message": "暂无正在进行中的比赛"})
+        if score is None:
+            return jsonify({"code": 500, "message": "查询错误"})
+        return score
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
 
 # @main_bp.route("/real_time_players")
 # def real_time_players():
