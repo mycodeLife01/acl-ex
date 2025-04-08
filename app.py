@@ -60,7 +60,7 @@ def schedules():
 
         # 正式使用时要排除线上赛的schedule
         schedule_list = schedules[0]["scheduleList"]
-        final_schedule_list = [s for s in schedule_list if s["stageId"] != 0]
+        final_schedule_list = [s for s in schedule_list if s["stageId"] not in (0, 5)]
         schedules[0]["scheduleList"] = final_schedule_list
         sort_schedules(schedules)
         return jsonify({"code": 200, "data": schedules, "message": "数据获取成功"})
@@ -132,7 +132,7 @@ def matches():
             return jsonify({"code": 404, "message": "查询的数据不存在"})
         else:
             offline_matches = [
-                m for m in matches if m["scheduleId"].split("-")[1] != "0"
+                m for m in matches if m["scheduleId"].split("-")[1] not in ("0", "5")
             ]
             sort_matches(offline_matches)
             if offline_matches == []:
@@ -176,7 +176,8 @@ def real_time_match():
         logging.error(f"发生错误：{e}", exc_info=True)
         return jsonify({"code": 500, "message": "数据获取失败"})
 
-@main_bp.route('/currentScheduleScore')
+
+@main_bp.route("/currentScheduleScore")
 def currentScheduleScore():
     try:
         score = get_current_score()
@@ -187,6 +188,7 @@ def currentScheduleScore():
         return score
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
+
 
 # @main_bp.route("/real_time_players")
 # def real_time_players():
