@@ -177,6 +177,20 @@ def real_time_match():
         return jsonify({"code": 500, "message": "数据获取失败"})
 
 
+@main_bp.route("/real_time_schedule")
+def real_time_schedule():
+    try:
+        schedule = get_real_time_schedule()
+        if schedule == {}:
+            return jsonify({"code": 404, "message": "No schedule going"})
+        if schedule == None:
+            raise Exception("error dealing with current schedule")
+        return jsonify({"code": 200, "data": schedule, "message": "数据获取成功"})
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return jsonify({"code": 500, "message": "数据获取失败"})
+
+
 @main_bp.route("/currentScheduleScore")
 def currentScheduleScore():
     try:

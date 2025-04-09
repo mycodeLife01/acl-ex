@@ -518,6 +518,27 @@ def get_real_time_match():
         return None
 
 
+def get_real_time_schedule():
+    try:
+        current_schedule: Schedule = Schedule.query.filter(
+            Schedule.schedule_status == 2
+        ).first()
+        if current_schedule:
+            res = {
+                "scheduleId": current_schedule.schedule_id,
+                "scheduleName": current_schedule.schedule_name,
+                "team_1": current_schedule.team_1,
+                "team_2": current_schedule.team_2,
+                "team_1_score": current_schedule.team_1_score,
+                "team_2_score": current_schedule.team_2_score,
+            }
+            return res
+        return {}
+    except Exception as e:
+        logging.error(f"发生错误：{e}", exc_info=True)
+        return None
+
+
 def get_real_time_player():
 
     def process_players(players):
