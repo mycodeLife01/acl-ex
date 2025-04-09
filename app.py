@@ -60,7 +60,7 @@ def schedules():
 
         # 正式使用时要排除线上赛的schedule
         schedule_list = schedules[0]["scheduleList"]
-        final_schedule_list = [s for s in schedule_list if s["stageId"] not in (0, 5)]
+        final_schedule_list = [s for s in schedule_list if s["stageId"] not in (0,)]
         schedules[0]["scheduleList"] = final_schedule_list
         sort_schedules(schedules)
         return jsonify({"code": 200, "data": schedules, "message": "数据获取成功"})
