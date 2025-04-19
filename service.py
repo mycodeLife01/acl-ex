@@ -527,18 +527,17 @@ def get_real_time_schedule():
             res = {
                 "scheduleId": current_schedule.schedule_id,
                 "scheduleName": current_schedule.schedule_name,
-                'scheduleType': current_schedule.schedule_type,
+                "scheduleType": current_schedule.schedule_type,
                 "team_1": current_schedule.team_1,
                 "team_2": current_schedule.team_2,
                 "team_1_score": current_schedule.team_1_score,
                 "team_2_score": current_schedule.team_2_score,
-                
             }
             return res
         return {}
     except Exception as e:
         logging.error(f"发生错误：{e}", exc_info=True)
-        return None
+        return {}
 
 
 def get_real_time_player():

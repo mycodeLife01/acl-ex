@@ -132,7 +132,7 @@ def matches():
             return jsonify({"code": 404, "message": "查询的数据不存在"})
         else:
             offline_matches = [
-                m for m in matches if m["scheduleId"].split("-")[1] not in ("0", "5")
+                m for m in matches if m["scheduleId"].split("-")[1] not in ("0", "5", "6")
             ]
             sort_matches(offline_matches)
             if offline_matches == []:
